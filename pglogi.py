@@ -185,18 +185,15 @@ def fit_and_evaluate_model(models, model_id=0, lr=0.001, batch_size=1024, epochs
         conn.commit()
 
     except Exception:
-        print("Cannot save model parameters to the database")
-        print(str(Exception))
-
-        print("Trying to re-establish database connection...")
+        print("Re-connecting to the database...")
         try:
             cur.close()
             conn.close()
         except:
-            print("Cannot close current connection")
+            print("Previous connection not available")
 
         # Wait 5s and try re-establish connection
-        sleep(5)
+        sleep(3)
 
         try:
             conn = psycopg2.connect(host='192.168.0.101', user='bartek', password='Aga', database='logs', port=5432)
@@ -204,8 +201,7 @@ def fit_and_evaluate_model(models, model_id=0, lr=0.001, batch_size=1024, epochs
             cur = conn.cursor()
             print("New connection has been established")
         except:
-            print("I am unable to connect to the database.")
-
+            print("Unable to connect to the database.")
             sleep(180)
             try:
                 conn = psycopg2.connect(host='192.168.0.101', user='bartek', password='Aga', database='logs', port=5432)
