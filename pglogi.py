@@ -240,13 +240,12 @@ models = {}
 # %%
 
 # lrs = [10, 1, 0.1, 0.01, 0.001, 0.0001]
-lrs = [0.001]
-epochss = [6000]
-batch_sizes = [None, 1024]
+lrs = [0.025, 0.0025, 0.001]
+batch_sizes = [None]
+epochss = [i for i in range(2600, 6500, 50)]
 
 
 model_id = 1730
-
 kombinacje = len(lrs) * len(epochss) * len(batch_sizes) + model_id
 
 for lr in lrs:
