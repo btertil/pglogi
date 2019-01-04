@@ -118,8 +118,6 @@ def fit_and_evaluate_model(models, model_id=0, lr=0.001, batch_size=1024, epochs
     # Plot training history
     def plot_accuracy_and_loss(trained_model, test_accuracy):
 
-        global conn
-        global cur
         validation = False
 
         hist = trained_model.history
@@ -182,8 +180,12 @@ def fit_and_evaluate_model(models, model_id=0, lr=0.001, batch_size=1024, epochs
 
     # insert statement
     sql_statement = """
-                insert into dl_models (python_model_id, lr, batch_size, epochs, test_loss, test_accuracy) values ({}, {}, {}, {}, {}, {})
+                insert into dl_models (python_model_id, lr, batch_size, epochs, test_loss, test_accuracy)
+                 values ({}, {}, {}, {}, {}, {})
             """.format(model_id, lr, batch_size, epochs, test_loss, test_accuracy)
+
+    global conn
+    global cur
 
     try:
         cur.execute(sql_statement)
