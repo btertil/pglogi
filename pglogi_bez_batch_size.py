@@ -34,18 +34,10 @@ import seaborn as sns
 sns.set_style("darkgrid")
 # %%
 
-# Try to connect
-try:
-    conn = psycopg2.connect(host='192.168.0.101', user='bartek', password='Aga', database='logs', port=5432)
-    # utf8
-    conn.set_client_encoding('UTF8')
-    # cursor
-    cur = conn.cursor()
-except:
-    print("I am unable to connect to the database.")
-    conn = None
-    cur = None
-    sys.exit(1)
+# Connect to database
+conn = psycopg2.connect(host='192.168.0.101', user='bartek', password='Aga', database='logs', port=5432)
+conn.set_client_encoding('UTF8')
+cur = conn.cursor()
 
 
 # %%
@@ -79,7 +71,8 @@ X_test_scaled = scaler.transform(X_test)
 
 
 # %%
-def fit_and_evaluate_model(models, model_id=0, lr=0.001, batch_size=1024, epochs=3500, patience=None):
+def fit_and_evaluate_model(models, model_id=0, lr=0.001, epochs=3500, patience=None):
+
     # Keras model
     k_model = Sequential()
     # 1st layer
@@ -106,11 +99,11 @@ def fit_and_evaluate_model(models, model_id=0, lr=0.001, batch_size=1024, epochs
 
 
     # Train
-    history = k_model.fit(X_train_scaled, y=y_train.values, epochs=epochs,
-                          batch_size=batch_size, validation_split=0.25, verbose=0)
+    history = k_model.fit(X_train_scaled, y=y_train.values, epochs=epochs, validation_split=0.25, verbose=0)
 
     # Plot training history
     def plot_accuracy_and_loss(trained_model, test_accuracy):
+
 
         validation = False
 
@@ -127,8 +120,8 @@ def fit_and_evaluate_model(models, model_id=0, lr=0.001, batch_size=1024, epochs
 
         fig, ax = plt.subplots(1, 2, figsize=(14, 6))
 
-        plt.suptitle("Model_id={0}: lr={1}, batch_size={2}, epochs={3}, test_accuracy={4: .10f}" \
-                     .format(model_id, lr, batch_size, epochs, test_accuracy), color='grey', fontsize=20)
+        plt.suptitle("Model_id={0}: lr={1}, epochs={2}, test_accuracy={3: .10f}" \
+                     .format(model_id, lr, epochs, test_accuracy), color='grey', fontsize=20)
 
         ax[0].tick_params(colors="grey")
         ax[0].plot(epochsw, acc, 'g', label='Training accuracy')
@@ -159,14 +152,14 @@ def fit_and_evaluate_model(models, model_id=0, lr=0.001, batch_size=1024, epochs
     test_accuracy = score_test[1]
 
     # Print evaluation results on test dataset
-    print("model_id_{}: lr={}, batch_size={}, epochs={}".format(model_id, lr, batch_size, epochs))
+    print("model_id_{}: lr={}, epochs={}".format(model_id, lr, epochs))
     print('Test loss:', test_loss)
     print('Test accuracy:', test_accuracy)
 
     # Zapisanie do dictionary
     models["{}".format(model_id)] = {
         "lr": lr,
-        "batch_size": batch_size,
+        "batch_size": None,
         "epochs": epochs,
         "test_loss": test_loss,
         "test_accuracy": test_accuracy
@@ -174,12 +167,12 @@ def fit_and_evaluate_model(models, model_id=0, lr=0.001, batch_size=1024, epochs
 
     # insert statement
     sql_statement = """
-                insert into dl_models (python_model_id, lr, batch_size, epochs, test_loss, test_accuracy)
-                 values ({}, {}, {}, {}, {}, {})
-            """.format(model_id, lr, batch_size, epochs, test_loss, test_accuracy)
+                insert into dl_models (python_model_id, lr, epochs, test_loss, test_accuracy)
+                 values ({}, {}, {}, {}, {})
+            """.format(model_id, lr, epochs, test_loss, test_accuracy)
 
-    global conn
     global cur
+    global conn
 
     try:
         cur.execute(sql_statement)
@@ -226,7 +219,7 @@ def fit_and_evaluate_model(models, model_id=0, lr=0.001, batch_size=1024, epochs
         models["best"] = {
             "model_id": model_id,
             "lr": lr,
-            "batch_size": batch_size,
+            "batch_size": None,
             "epochs": epochs,
             "test_loss": test_loss,
             "test_accuracy": test_accuracy
@@ -240,23 +233,18 @@ models = {}
 
 # %%
 
-# lrs = [10, 1, 0.1, 0.01, 0.001, 0.0001]
-lrs = [0.0007]
-batch_sizes = [None]
-epochss = [i for i in range(4500, 9550, 50)]
+lrs = [0.025, 0.001]
+epochss = [i for i in range(2600, 6500, 50)]
 
-
-model_id = 1886
-kombinacje = len(lrs) * len(epochss) * len(batch_sizes) + model_id
+model_id = 1730
+kombinacje = len(lrs) * len(epochss) + model_id
 
 for lr in lrs:
     for epochs in epochss:
-        for batch_size in batch_sizes:
 
-            model_id += 1
-            print("\n\nFitting model {} / {}".format(model_id, kombinacje))
-            fit_and_evaluate_model(models, model_id, lr=lr, batch_size=batch_size, epochs=epochs)
+        model_id += 1
+        print("\n\nFitting model {} / {}".format(model_id, kombinacje))
+        fit_and_evaluate_model(models, model_id, lr=lr, epochs=epochs)
 
-        print("\n\nBest model:")
-        print(models["best"])
-
+print("\n\nBest model:")
+print(models["best"])

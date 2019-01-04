@@ -26,46 +26,6 @@ order by 5 desc;
 
 -- czas szkolenia modelu
 -- czas wykonywania na podstawie entered w bazie (uwaga, wirtualka, czas był rozjechany w service ntpd restart spowodował przesunięcie w 1 miejscu)
-select
-    m.*,
-    case
-        when python_model_id < 73 then 1
-        when python_model_id >= 73 and python_model_id < 101 then 2
-        when python_model_id >= 101 and python_model_id < 250 then 3
-        when python_model_id >= 250 and python_model_id < 310 then 4
-        when python_model_id >= 250 and python_model_id < 460 then 5
-        when python_model_id >= 460 and python_model_id < 668 then 6
-        when python_model_id >= 668 and python_model_id < 1494 then 7
-        else 8
-    end search_id,
-    entered -  lag(entered, 1) over (partition by
-        case
-            when python_model_id < 73 then 1
-            when python_model_id >= 73 and python_model_id < 101 then 2
-            when python_model_id >= 101 and python_model_id < 250 then 3
-            when python_model_id >= 250 and python_model_id < 310 then 4
-            when python_model_id >= 250 and python_model_id < 460 then 5
-            when python_model_id >= 460 and python_model_id < 668 then 6
-            when python_model_id >= 668 and python_model_id < 1494 then 7
-            else 8
-        end order by id
-    ) time_diff
-from
-    dl_models m
-where 1 = 1
-order by
-    case
-        when python_model_id < 73 then 1
-        when python_model_id >= 73 and python_model_id < 101 then 2
-        when python_model_id >= 101 and python_model_id < 250 then 3
-        when python_model_id >= 250 and python_model_id < 310 then 4
-        when python_model_id >= 250 and python_model_id < 460 then 5
-        when python_model_id >= 460 and python_model_id < 668 then 6
-        when python_model_id >= 668 and python_model_id < 1494 then 7
-        else 8
-    end,
-    entered;
-
 
 -- view v_dl_models_runs
 drop view if exists v_dl_models_runs cascade;
@@ -80,7 +40,9 @@ create or replace view v_dl_models_runs as
             when python_model_id >= 250 and python_model_id < 460 then 5
             when python_model_id >= 460 and python_model_id < 668 then 6
             when python_model_id >= 668 and python_model_id < 1494 then 7
-            else 8
+            when python_model_id >= 1494 and python_model_id < 1731 then 8
+            when python_model_id >= 1731 and python_model_id < 1988 then 10
+            else 9
         end run_id,
         entered -  lag(entered, 1) over (partition by
             case
@@ -91,7 +53,9 @@ create or replace view v_dl_models_runs as
                 when python_model_id >= 250 and python_model_id < 460 then 5
                 when python_model_id >= 460 and python_model_id < 668 then 6
                 when python_model_id >= 668 and python_model_id < 1494 then 7
-                else 8
+                when python_model_id >= 1494 and python_model_id < 1731 then 8
+                when python_model_id >= 1731 and python_model_id < 1988 then 10
+            else 9
             end order by id
         ) time_diff
     from
@@ -106,7 +70,9 @@ create or replace view v_dl_models_runs as
             when python_model_id >= 250 and python_model_id < 460 then 5
             when python_model_id >= 460 and python_model_id < 668 then 6
             when python_model_id >= 668 and python_model_id < 1494 then 7
-            else 8
+            when python_model_id >= 1494 and python_model_id < 1731 then 8
+            when python_model_id >= 1731 and python_model_id < 1988 then 10
+            else 9
         end,
         entered;
 
@@ -170,3 +136,8 @@ delete from dl_models where python_model_id = 640;
 select '2 days 2 seconds' :: interval;
 
 select '2 days 2 seconds' :: interval interval_time, extract(epoch from '2 days 2 seconds' :: interval) epoch_time;
+
+
+select count(*) ile from dl_models;
+
+commit;
