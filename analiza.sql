@@ -85,7 +85,7 @@ select * from v_dl_models_runs;
 create or replace view v_dl_models_performance as
   select * from v_dl_models_runs order by test_accuracy desc;
 
-select * from v_dl_models_performance;
+select * from v_dl_models_performance limit 25;
 
 
 -- models per run_id
@@ -132,15 +132,11 @@ order by
 
 -- updates
 
-update dl_models set patience = 10 where patience is null and python_model_id >= 1494;
-
-delete from dl_models where python_model_id = 640;
 
 select '2 days 2 seconds' :: interval;
 
 select '2 days 2 seconds' :: interval interval_time, extract(epoch from '2 days 2 seconds' :: interval) epoch_time;
 
 
-select count(*) ile from dl_models;
+select count(*) ile, max(id) max_id, max(test_accuracy) best from dl_models;
 
-commit;
