@@ -1,6 +1,8 @@
-0.001
 
-0.00025, 0.0005, 0.00075, 0.001, 0.00125, 0.0015, 0.00175,
-lrs = [0.025, 0.0025]
-epochss = [i for i in range(2600, 5550, 25)]
-batch_sizes = [516, 1024, 2048, 4096, None]
+db_creds = {
+    "host": "192.168.0.101",
+    "user": "bartek",
+    "password": "Aga",
+    "database": "logs",
+    "port": 5432
+}
