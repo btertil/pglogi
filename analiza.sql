@@ -42,7 +42,8 @@ create or replace view v_dl_models_runs as
             when python_model_id >= 668 and python_model_id < 1494 then 7
             when python_model_id >= 1494 and python_model_id < 1731 then 8
             when python_model_id >= 1731 and python_model_id < 1886 then 9
-            else 10
+            when python_model_id >= 1886 and python_model_id < 1948 then 10
+            else 11
         end run_id,
         entered -  lag(entered, 1) over (partition by
             case
@@ -55,7 +56,8 @@ create or replace view v_dl_models_runs as
                 when python_model_id >= 668 and python_model_id < 1494 then 7
                 when python_model_id >= 1494 and python_model_id < 1731 then 8
                 when python_model_id >= 1731 and python_model_id < 1886 then 9
-            else 10
+                when python_model_id >= 1886 and python_model_id < 1948 then 10
+                else 11
             end order by id
         ) time_diff
     from
@@ -72,7 +74,8 @@ create or replace view v_dl_models_runs as
             when python_model_id >= 668 and python_model_id < 1494 then 7
             when python_model_id >= 1494 and python_model_id < 1731 then 8
             when python_model_id >= 1731 and python_model_id < 1886 then 9
-            else 10
+            when python_model_id >= 1886 and python_model_id < 1948 then 10
+            else 11
         end,
         entered;
 
