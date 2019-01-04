@@ -72,6 +72,7 @@ X_test_scaled = scaler.transform(X_test)
 
 # %%
 def fit_and_evaluate_model(models, model_id=0, lr=0.001, epochs=3500, patience=None):
+
     # Keras model
     k_model = Sequential()
     # 1st layer
@@ -102,6 +103,7 @@ def fit_and_evaluate_model(models, model_id=0, lr=0.001, epochs=3500, patience=N
 
     # Plot training history
     def plot_accuracy_and_loss(trained_model, test_accuracy):
+
 
         validation = False
 
@@ -169,17 +171,16 @@ def fit_and_evaluate_model(models, model_id=0, lr=0.001, epochs=3500, patience=N
                  values ({}, {}, {}, {}, {})
             """.format(model_id, lr, epochs, test_loss, test_accuracy)
 
+    global cur
+    global conn
+
     try:
-        global cur
-        global conn
         cur.execute(sql_statement)
         conn.commit()
 
     except Exception:
         print("Re-connecting to the database...")
         try:
-            global cur
-            global conn
             cur.close()
             conn.close()
         except:
@@ -189,8 +190,6 @@ def fit_and_evaluate_model(models, model_id=0, lr=0.001, epochs=3500, patience=N
         sleep(3)
 
         try:
-            global cur
-            global conn
             conn = psycopg2.connect(host='192.168.0.101', user='bartek', password='Aga', database='logs', port=5432)
             conn.set_client_encoding('UTF8')
             cur = conn.cursor()
@@ -199,8 +198,6 @@ def fit_and_evaluate_model(models, model_id=0, lr=0.001, epochs=3500, patience=N
             print("Unable to connect to the database.")
             sleep(180)
             try:
-                global cur
-                global conn
                 conn = psycopg2.connect(host='192.168.0.101', user='bartek', password='Aga', database='logs', port=5432)
                 conn.set_client_encoding('UTF8')
                 cur = conn.cursor()
