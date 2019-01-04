@@ -264,6 +264,6 @@ for lr in lrs:
                 fit_and_evaluate_model(models, model_id, lr=lr, batch_size=batch_size,
                                        epochs=epochs, patience=patience)
 
-        print("\n\nBest model:")
-        print(models["best"])
+print("\n\nBest model:")
+print(models["best"])
 

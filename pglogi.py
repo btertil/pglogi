@@ -257,6 +257,6 @@ for lr in lrs:
             print("\n\nFitting model {} / {}".format(model_id, kombinacje))
             fit_and_evaluate_model(models, model_id, lr=lr, batch_size=batch_size, epochs=epochs)
 
-        print("\n\nBest model:")
-        print(models["best"])
+print("\n\nBest model:")
+print(models["best"])
 
