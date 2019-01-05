@@ -1,32 +1,26 @@
 
+-- baza dla modeli
 
--- najlepsze
-select * from dl_models order by test_accuracy desc;
+-- tabela z danymi modeli
+-- drop table if exists dl_models_results;
+create table dl_models_results (
+    id SERIAL not null primary key,
+    python_model_id INT,
+    lr double precision,
+    batch_size INT,
+    epochs INT,
+    train_loss double precision,
+    train_accuracy double precision,
+    valid_loss double precision,
+    valid_accuracy double precision,
+    test_loss double precision,
+    test_accuracy double precision,
+    machine_id varchar(90),
+    architecture varchar(250),
+    optimizer varchar(90),
+    entered timestamp not null default now()
+);
 
--- analiza
-select batch_size, count(*) ile, avg(test_accuracy) from dl_models group by batch_size order by avg(test_accuracy) desc;
-select lr, count(*) ile, avg(test_accuracy) from dl_models where lr <> 0.1 group by lr order by avg(test_accuracy) desc;
-
-select epochs, count(*) ile, avg(test_accuracy) from dl_models group by 1 order by avg(test_accuracy) desc;
-select run_id, count(*) ile, avg(test_accuracy) from v_dl_models_runs group by 1 order by avg(test_accuracy) desc;
-
--- to warto tylko jeśłi inne hyperparameters, beta, beta2 itd
-select
-  lr,
-  batch_size,
-  epochs,
-  count(*) ile,
-  avg(test_accuracy)
-from dl_models
-group by
-  lr,
-  batch_size,
-  epochs
-order by 5 desc;
-
-
--- czas szkolenia modelu
--- czas wykonywania na podstawie entered w bazie (uwaga, wirtualka, czas był rozjechany w service ntpd restart spowodował przesunięcie w 1 miejscu)
 
 -- view v_dl_models_runs
 drop view if exists v_dl_models_runs cascade;
@@ -64,7 +58,7 @@ create or replace view v_dl_models_runs as
             end order by id
         ) time_diff
     from
-        dl_models m
+        dl_models_results m
     where 1 = 1
     order by
         case
@@ -133,9 +127,9 @@ create or replace view v_dl_models_best_per_run as
        patience
     from (
         select
-          r.*,
+          p.*,
           max(test_accuracy) over (partition by run_id) ma
-        from v_dl_models_performance r
+        from v_dl_models_performance p
         ) s
     where
       ma = test_accuracy
@@ -144,16 +138,7 @@ create or replace view v_dl_models_best_per_run as
 
 select * from v_dl_models_best_per_run;
 
--- updates
-
-
-select '2 days 2 seconds' :: interval;
-
-select '2 days 2 seconds' :: interval interval_time, extract(epoch from '2 days 2 seconds' :: interval) epoch_time;
-
-
-select count(*) ile, max(id) max_id, max(test_accuracy) best from dl_models;
-
+commit;
 
 
 -- reporting
@@ -170,8 +155,3 @@ select * from v_dl_models_best_per_run;
 
 -- current progress
 select count(*) ile, max(id) max_id, max(test_accuracy) best from dl_models;
-
-commit;
-
-select * from v_dl_models_performance where id=1;
-

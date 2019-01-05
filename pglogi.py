@@ -10,6 +10,8 @@ from time import sleep
 import numpy as np
 import pandas as pd
 
+from settings import db_creds
+
 import keras
 from keras.models import Sequential
 from keras.layers import Dense, BatchNormalization, Softmax, Activation, Dropout
@@ -27,6 +29,7 @@ from sklearn.preprocessing import StandardScaler, OneHotEncoder
 
 import psycopg2
 import psycopg2.extras  # cursor
+from psycopg2 import OperationalError, InterfaceError
 
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -36,12 +39,12 @@ sns.set_style("darkgrid")
 
 # Try to connect
 try:
-    conn = psycopg2.connect(host='192.168.0.101', user='bartek', password='Aga', database='logs', port=5432)
+    conn = psycopg2.connect(**db_creds)
     # utf8
     conn.set_client_encoding('UTF8')
     # cursor
     cur = conn.cursor()
-except:
+except OperationalError:
     print("I am unable to connect to the database.")
     conn = None
     cur = None
@@ -121,7 +124,7 @@ def fit_and_evaluate_model(models, model_id=0, lr=0.001, batch_size=1024, epochs
             val_acc = hist['val_acc']
             val_loss = hist['val_loss']
             validation = True
-        except KeyError as e:
+        except KeyError:
             print("No validation data defined, showing only training set hostory")
         epochsw = range(1, len(acc) + 1)
 
@@ -185,31 +188,31 @@ def fit_and_evaluate_model(models, model_id=0, lr=0.001, batch_size=1024, epochs
         cur.execute(sql_statement)
         conn.commit()
 
-    except Exception:
+    except InterfaceError:
         print("Re-connecting to the database...")
         try:
             cur.close()
             conn.close()
-        except:
-            print("Previous connection not available")
+        except InterfaceError:
+            print("Current connection not available")
 
-        # Wait 5s and try re-establish connection
+        # Wait 3s and try re-establish connection
         sleep(3)
 
         try:
-            conn = psycopg2.connect(host='192.168.0.101', user='bartek', password='Aga', database='logs', port=5432)
+            conn = psycopg2.connect(**db_creds)
             conn.set_client_encoding('UTF8')
             cur = conn.cursor()
             print("New connection has been established")
-        except:
+        except OperationalError:
             print("Unable to connect to the database.")
             sleep(180)
             try:
-                conn = psycopg2.connect(host='192.168.0.101', user='bartek', password='Aga', database='logs', port=5432)
+                conn = psycopg2.connect(**db_creds)
                 conn.set_client_encoding('UTF8')
                 cur = conn.cursor()
                 print("New connection has been established")
-            except:
+            except OperationalError:
                 print("I am unable to connect to the database, quitting...")
                 sys.exit()
 
@@ -242,11 +245,11 @@ models = {}
 
 # lrs = [10, 1, 0.1, 0.01, 0.001, 0.0001]
 lrs = [0.0007]
-batch_sizes = [None]
-epochss = [i for i in range(4500, 9550, 50)]
+batch_sizes = [4096]
+epochss = [i for i in range(15000, 17000, 50)]
 
 
-model_id = 1886
+model_id = 817
 kombinacje = len(lrs) * len(epochss) * len(batch_sizes) + model_id
 
 for lr in lrs:
@@ -257,6 +260,10 @@ for lr in lrs:
             print("\n\nFitting model {} / {}".format(model_id, kombinacje))
             fit_and_evaluate_model(models, model_id, lr=lr, batch_size=batch_size, epochs=epochs)
 
-        print("\n\nBest model:")
-        print(models["best"])
+print("\n\nBest model:")
+print(models["best"])
 
+
+# TODO: dodać pozostałe ststystyki modeli, szczególnie train i validacja (tu validation to bardziej test i odwrotnie)
+# TODO: dodać notebook ewentualnie ale ten uruchamiany z Jupytera a nie PyCharm
+# TODO: jak run_id 700 ale wcześniejsze epochs pred 15k !
