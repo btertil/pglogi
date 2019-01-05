@@ -91,23 +91,6 @@ order by
 select * from v_dl_models_performance limit 25;
 
 
--- models per run_id
-select run_id, count(*) ile, avg(test_accuracy) from v_dl_models_runs group by 1 order by avg(test_accuracy) desc;
-
-
--- speed & updates
-select
-  run_id,
-  count(*) ile,
-  avg(time_diff) avg_time_diff,
-  avg((20090 * epochs) / batch_size) avg_updates,
-  avg(((20090 * epochs) / batch_size) / (extract(epoch from time_diff)))  avg_speed,
-  avg(test_accuracy) avg_test_accuracy
-from v_dl_models_runs
-where id not in (34, 35)
-group by 1
-order by 5 desc;
-
 
 -- best model per run_id
 drop view if exists v_dl_models_best_per_run;
@@ -141,17 +124,3 @@ select * from v_dl_models_best_per_run;
 commit;
 
 
--- reporting
--- ----------
-
--- basic selects
-select * from v_dl_models_runs;
-select * from v_dl_models_runs where run_id >= 7 and patience is null and id > 1016;
-select * from v_dl_models_performance limit 50;
-
--- best models per run
-select * from v_dl_models_best_per_run;
-
-
--- current progress
-select count(*) ile, max(id) max_id, max(test_accuracy) best from dl_models;
