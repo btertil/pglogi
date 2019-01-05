@@ -55,7 +55,7 @@ create or replace view v_dl_models_runs as
                 when python_model_id >= 250 and python_model_id < 310 then 4
                 when python_model_id >= 250 and python_model_id < 460 then 5
                 when python_model_id >= 460 and python_model_id < 668 then 6
-                when python_model_id >= 668 and python_model_id < 1494 then 7
+                when python_model_id >= 668 and python_model_id < 818 then 7
                 when python_model_id >= 818 and python_model_id < 1494 then 700
                 when python_model_id >= 1494 and python_model_id < 1731 then 8
                 when python_model_id >= 1731 and python_model_id < 1886 then 9
@@ -74,7 +74,7 @@ create or replace view v_dl_models_runs as
             when python_model_id >= 250 and python_model_id < 310 then 4
             when python_model_id >= 250 and python_model_id < 460 then 5
             when python_model_id >= 460 and python_model_id < 668 then 6
-            when python_model_id >= 668 and python_model_id < 1494 then 7
+            when python_model_id >= 668 and python_model_id < 818 then 7
             when python_model_id >= 818 and python_model_id < 1494 then 700
             when python_model_id >= 1494 and python_model_id < 1731 then 8
             when python_model_id >= 1731 and python_model_id < 1886 then 9
@@ -160,7 +160,7 @@ select count(*) ile, max(id) max_id, max(test_accuracy) best from dl_models;
 -- ----------
 
 -- basic selects
-
+select * from v_dl_models_runs;
 select * from v_dl_models_runs where run_id >= 7 and patience is null and id > 1016;
 select * from v_dl_models_performance limit 50;
 
@@ -172,3 +172,6 @@ select * from v_dl_models_best_per_run;
 select count(*) ile, max(id) max_id, max(test_accuracy) best from dl_models;
 
 commit;
+
+select * from v_dl_models_performance where id=1;
+

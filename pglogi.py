@@ -263,3 +263,7 @@ for lr in lrs:
 print("\n\nBest model:")
 print(models["best"])
 
+
+# TODO: dodać pozostałe ststystyki modeli, szczególnie train i validacja (tu validation to bardziej test i odwrotnie)
+# TODO: dodać notebook ewentualnie ale ten uruchamiany z Jupytera a nie PyCharm
+# TODO: jak run_id 700 ale wcześniejsze epochs pred 15k !
