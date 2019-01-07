@@ -101,8 +101,8 @@ xgb_models_df.test_accuracy.max()
 xgb_models_df[xgb_models_df.test_accuracy >= 0.996610]
 
 
-# zapis do csv
-xgb_models_df.to_csv("./xgb_models.csv")
+# zapis do csv UWAGA!
+# xgb_models_df.to_csv("./xgb_models.csv") # Żeby NIE NADPISAĆ !!!
 
 
 # zapis do bazy PostgreSQL
