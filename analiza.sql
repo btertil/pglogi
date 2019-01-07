@@ -93,3 +93,20 @@ commit;
 
 select * from v_dl_models_performance where id=1;
 
+
+-- xgboost models from ubuntulaptop (sql_alchemy via pandas):
+
+-- best xgboost model
+select
+    index model_id,
+    base_score,
+    lr learning_rate,
+    reg_alpha,
+    reg_lambda,
+    test_accuracy
+from
+    (select
+        x.*,
+        max(test_accuracy) over () from xgb_models x
+    ) s
+where test_accuracy = max;
