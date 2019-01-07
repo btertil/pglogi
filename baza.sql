@@ -39,7 +39,8 @@ create or replace view v_dl_models_runs as
             when python_model_id >= 1494 and python_model_id < 1731 then 8
             when python_model_id >= 1731 and python_model_id < 1886 then 9
             when python_model_id >= 1886 and python_model_id < 1948 then 10
-            else 11
+            when python_model_id >= 1948 and python_model_id < 2430 then 11
+            else 12
         end run_id,
         entered -  lag(entered, 1) over (partition by
             case
@@ -54,11 +55,12 @@ create or replace view v_dl_models_runs as
                 when python_model_id >= 1494 and python_model_id < 1731 then 8
                 when python_model_id >= 1731 and python_model_id < 1886 then 9
                 when python_model_id >= 1886 and python_model_id < 1948 then 10
-                else 11
+                when python_model_id >= 1948 and python_model_id < 2430 then 11
+                else 12
             end order by id
         ) time_diff
     from
-        dl_models_results m
+        dl_models m
     where 1 = 1
     order by
         case
@@ -73,7 +75,8 @@ create or replace view v_dl_models_runs as
             when python_model_id >= 1494 and python_model_id < 1731 then 8
             when python_model_id >= 1731 and python_model_id < 1886 then 9
             when python_model_id >= 1886 and python_model_id < 1948 then 10
-            else 11
+            when python_model_id >= 1948 and python_model_id < 2430 then 11
+            else 12
         end,
         entered;
 
@@ -124,3 +127,24 @@ select * from v_dl_models_best_per_run;
 commit;
 
 
+-- xgb models
+
+-- tabela z danymi modeli
+-- drop table if exists xgb_models_results;
+create table xgb_models_results (
+    id SERIAL not null primary key,
+    python_model_id INT,
+    lr double precision,
+    batch_size INT,
+    epochs INT,
+    train_loss double precision,
+    train_accuracy double precision,
+    valid_loss double precision,
+    valid_accuracy double precision,
+    test_loss double precision,
+    test_accuracy double precision,
+    machine_id varchar(90),
+    architecture varchar(250),
+    optimizer varchar(90),
+    entered timestamp not null default now()
+);
