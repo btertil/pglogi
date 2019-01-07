@@ -30,9 +30,9 @@ conn.set_client_encoding('UTF8')
 cur = conn.cursor()
 
 # If local on ubuntulaptop
-conn2 = psycopg2.connect(host='localhost', user='bartek', password='Aga', database='bartek', port=5432)
-conn2.set_client_encoding('UTF8')
-cur2 = conn2.cursor()
+# conn2 = psycopg2.connect(host='localhost', user='bartek', password='Aga', database='bartek', port=5432)
+# conn2.set_client_encoding('UTF8')
+# cur2 = conn2.cursor()
 
 
 # Prace z wynikami modeli deep learning
