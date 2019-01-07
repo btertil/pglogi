@@ -104,6 +104,12 @@ xgb_models_df[xgb_models_df.test_accuracy >= 0.996610]
 # zapis do csv UWAGA!
 # xgb_models_df.to_csv("./xgb_models.csv") # Żeby NIE NADPISAĆ !!!
 
+# Oryginalnie: xgb_models_df = pd.DataFrame(models).transpose()
+# LUB wczytać z csv:
+# wczytanie csv
+xgb_models_df = pd.read_csv("./xgb_models.csv")
+xgb_models_df.head()
+
 
 # zapis do bazy PostgreSQL
 
@@ -127,3 +133,34 @@ xgb.plot_importance(xgb_model)
 xgb.plot_tree(xgb_model, num_trees=524)
 
 xgb.to_graphviz(xgb_model, num_trees=524)
+
+
+
+
+# Próby z transakcją / może się przydać
+# Transaction: begin transaction + try + commit/rollback
+
+conn = psycopg2.connect(host='192.168.0.101', user='bartek', password='Aga', database='logs', port=5432)
+conn.set_client_encoding('UTF8')
+cur = conn.cursor()
+
+# start transaction
+cur.execute("begin transaction")
+
+try:
+    for k, v in models.items():
+        cur.execute("""
+            insert into xgb_models_results (
+                python_model_id,
+                lr,
+                test_accuracy
+            ) values ({}, {}, {})
+        """.format(k, v['lr'], v['test_accuracy']))
+    conn.commit()
+    print("All records inserted, commit")
+except:
+    conn.rollback()
+    print("Records NOT inserted, rollback!")
+
+
+
