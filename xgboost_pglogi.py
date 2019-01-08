@@ -21,7 +21,7 @@ sns.set_style("darkgrid")
 
 
 # Try to connect
-conn = psycopg2.connect(host='192.168.0.101', user='bartek', password='Aga', database='logs', port=5432)
+conn = psycopg2.connect(host='192.168.0.201', user='bartek', password='Aga', database='logs', port=5432)
 conn.set_client_encoding('UTF8')
 cur = conn.cursor()
 
@@ -140,7 +140,7 @@ xgb.to_graphviz(xgb_model, num_trees=524)
 # Próby z transakcją / może się przydać
 # Transaction: begin transaction + try + commit/rollback
 
-conn = psycopg2.connect(host='192.168.0.101', user='bartek', password='Aga', database='logs', port=5432)
+conn = psycopg2.connect(host='192.168.0.201', user='bartek', password='Aga', database='logs', port=5432)
 conn.set_client_encoding('UTF8')
 cur = conn.cursor()
 
