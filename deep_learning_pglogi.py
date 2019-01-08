@@ -53,7 +53,7 @@ except OperationalError:
 
 # %%
 
-logs_df = pd.read_sql_query('select * from akuratne_25k', conn)
+logs_df = pd.read_sql_query('select * from log_data', conn)
 print(logs_df.shape)
 logs_df.head()
 

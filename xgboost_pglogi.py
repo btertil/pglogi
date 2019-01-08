@@ -26,7 +26,7 @@ conn.set_client_encoding('UTF8')
 cur = conn.cursor()
 
 
-logs_df = pd.read_sql_query('select * from akuratne_25k', conn)
+logs_df = pd.read_sql_query('select * from log_data', conn)
 print(logs_df.shape)
 logs_df.head()
 
@@ -53,14 +53,14 @@ reg_lambdas = [0, 0.2, 0.5, 0.8, 1]
 base_scores = [0.4, 0.5, 0.6]
 
 model_id = 0
-kombinations = len(lrs) * len(reg_lambdas) * len(reg_alphas) * len(base_scores) + model_id
+combinations = len(lrs) * len(reg_lambdas) * len(reg_alphas) * len(base_scores) + model_id
 
 for lr in lrs:
     for reg_alpha in reg_alphas:
         for reg_lambda in reg_lambdas:
             for base_score in base_scores:
                 model_id += 1
-                print("fitting model {} / {}".format(model_id, kombinations))
+                print("fitting model {} / {}".format(model_id, combinations))
 
                 xgb_model = xgb.XGBClassifier(base_score=base_score, booster='gbtree', colsample_bylevel=1,
                                               colsample_bytree=1, gamma=0, learning_rate=lr, max_delta_step=0,
@@ -70,12 +70,14 @@ for lr in lrs:
                                               silent=True, subsample=1)
 
                 xgb_model = xgb_model.fit(X=X_train, y=y_train, verbose=1)
+                train_accuracy = xgb_model.score(X=X_train, y=y_train)
                 test_accuracy = xgb_model.score(X=X_test, y=y_test)
 
                 print("model_id_{}: test_accuracy={} (lr={}, reg_alpha={}, reg_lambda={}, base_score={})" \
                       .format(model_id, test_accuracy, lr, reg_alpha, reg_lambda, base_score))
 
                 models[model_id] = {
+                    "train_accuracy": train_accuracy,
                     "test_accuracy": test_accuracy,
                     "lr": lr,
                     "reg_alpha": reg_alpha,
@@ -102,12 +104,12 @@ xgb_models_df[xgb_models_df.test_accuracy >= 0.996610]
 
 
 # zapis do csv UWAGA!
-# xgb_models_df.to_csv("./xgb_models.csv") # Żeby NIE NADPISAĆ !!!
+xgb_models_df.to_csv("./xgb_models2.csv") # Żeby NIE NADPISAĆ !!!
 
 # Oryginalnie: xgb_models_df = pd.DataFrame(models).transpose()
 # LUB wczytać z csv:
 # wczytanie csv
-xgb_models_df = pd.read_csv("./xgb_models.csv")
+xgb_models_df = pd.read_csv("./xgb_models2.csv")
 xgb_models_df.head()
 
 
