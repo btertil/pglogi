@@ -115,7 +115,7 @@ xgb_models_df.head()
 
 from sqlalchemy import create_engine
 
-engine = create_engine("postgresql://bartek:Aga@192.168.0.101:5432/logs")
+engine = create_engine("postgresql://bartek:Aga@192.168.0.201:5432/logs")
 xgb_models_df.to_sql("xgb_models", engine)
 
 # Best Model:

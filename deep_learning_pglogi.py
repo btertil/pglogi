@@ -83,6 +83,7 @@ X_test_scaled = scaler.transform(X_test)
 
 # %%
 def fit_and_evaluate_model(models, model_id=0, lr=0.001, batch_size=1024, epochs=3500, patience=None):
+
     # Keras model
     k_model = Sequential()
     # 1st layer
@@ -264,6 +265,4 @@ print("\n\nBest model:")
 print(models["best"])
 
 
-# TODO: dodać pozostałe ststystyki modeli, szczególnie train i validacja (tu validation to bardziej test i odwrotnie)
-# TODO: dodać notebook ewentualnie ale ten uruchamiany z Jupytera a nie PyCharm
-
+# TODO: dodać pozostałe hyperparameters modeli, szczególnie: architektura i regularyzacja)

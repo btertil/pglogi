@@ -25,7 +25,7 @@ sns.set_style("darkgrid")
 
 
 # Try to connect: remote database
-conn = psycopg2.connect(host='192.168.0.101', user='bartek', password='Aga', database='logs', port=5432)
+conn = psycopg2.connect(host='192.168.0.201', user='bartek', password='Aga', database='logs', port=5432)
 conn.set_client_encoding('UTF8')
 cur = conn.cursor()
 
@@ -188,14 +188,14 @@ xgb_models_df[xgb_models_df.test_accuracy == xgb_models_df.test_accuracy.max()]
 from sqlalchemy import create_engine
 
 # JUŻ ZROBIONE !!!
-# engine = create_engine("postgresql://bartek:Aga@192.168.0.101:5432/logs")
+# engine = create_engine("postgresql://bartek:Aga@192.168.0.201:5432/logs")
 # xgb_models_df.to_sql("xgb_models", engine)
 
 ## Winner is:
 
 # ale wcześniej aby było mozna go wytrenować jeszcze raz pobranie i przygotowanie danych:
 
-conn = psycopg2.connect(host='192.168.0.101', user='bartek', password='Aga', database='logs', port=5432)
+conn = psycopg2.connect(host='192.168.0.201', user='bartek', password='Aga', database='logs', port=5432)
 conn.set_client_encoding('UTF8')
 cur = conn.cursor()
 
@@ -340,4 +340,4 @@ graph
 graph2 = pydotplus.graph_from_dot_data(dot_data)
 Image(graph2.create_png())
 
-
+# TODO: dodać pozostałe hyperparameters modeli, szczególnie: n_estimators i regularyzacja)
