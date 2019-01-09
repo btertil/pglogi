@@ -6,7 +6,7 @@ Created on Wed Jan  2 18:07:31 2019
 """
 
 import sys
-from time import sleep
+from time import sleep, time
 import numpy as np
 import pandas as pd
 
@@ -110,8 +110,11 @@ def fit_and_evaluate_model(models, model_id=0, lr=0.001, batch_size=1024, epochs
 
 
     # Train
+    tic = time()
     history = k_model.fit(X_train_scaled, y=y_train.values, epochs=epochs,
                           batch_size=batch_size, validation_split=0.25, verbose=0)
+    tac = time()
+    training_time = tac - tic
 
     # Plot training history
     def plot_accuracy_and_loss(trained_model, test_accuracy):
@@ -166,6 +169,7 @@ def fit_and_evaluate_model(models, model_id=0, lr=0.001, batch_size=1024, epochs
     print("model_id_{}: lr={}, batch_size={}, epochs={}".format(model_id, lr, batch_size, epochs))
     print('Test loss:', test_loss)
     print('Test accuracy:', test_accuracy)
+    print("Training time: {}".format(training_time))
 
     # Zapisanie do dictionary
     models["{}".format(model_id)] = {
@@ -173,14 +177,15 @@ def fit_and_evaluate_model(models, model_id=0, lr=0.001, batch_size=1024, epochs
         "batch_size": batch_size,
         "epochs": epochs,
         "test_loss": test_loss,
-        "test_accuracy": test_accuracy
+        "test_accuracy": test_accuracy,
+        "training_time": training_time
     }
 
     # insert statement
     sql_statement = """
-                insert into dl_models (python_model_id, lr, batch_size, epochs, test_loss, test_accuracy)
-                 values ({}, {}, {}, {}, {}, {})
-            """.format(model_id, lr, batch_size, epochs, test_loss, test_accuracy)
+                insert into dl_models (python_model_id, lr, batch_size, epochs, test_loss, test_accuracy, training_time)
+                 values ({}, {}, {}, {}, {}, {}, '{}' :: interval)
+            """.format(model_id, lr, batch_size, epochs, test_loss, test_accuracy, training_time)
 
     global conn
     global cur
