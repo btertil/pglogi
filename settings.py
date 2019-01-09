@@ -6,3 +6,5 @@ db_creds = {
     "database": "logs",
     "port": 5432
 }
+
+db_engine_str = "postgresql://bartek:Aga@192.168.0.201:5432/logs"

@@ -1,8 +1,10 @@
 import sys
-from time import sleep
+from time import sleep, time
 
 import numpy as np
 import pandas as pd
+
+from settings import db_creds, db_engine_str
 
 import sklearn
 from sklearn.model_selection import train_test_split
@@ -21,7 +23,7 @@ sns.set_style("darkgrid")
 
 
 # Try to connect
-conn = psycopg2.connect(host='192.168.0.201', user='bartek', password='Aga', database='logs', port=5432)
+conn = psycopg2.connect(**db_creds)
 conn.set_client_encoding('UTF8')
 cur = conn.cursor()
 
@@ -65,11 +67,16 @@ for lr in lrs:
                 xgb_model = xgb.XGBClassifier(base_score=base_score, booster='gbtree', colsample_bylevel=1,
                                               colsample_bytree=1, gamma=0, learning_rate=lr, max_delta_step=0,
                                               max_depth=6, min_child_weight=1, missing=None, n_estimators=1000,
-                                              n_jobs=-1, nthread=None, objective='binary:logistic', random_state=0,
-                                              reg_alpha=reg_alpha, reg_lambda=reg_lambda, scale_pos_weight=1, seed=None,
+                                              n_jobs=-1, objective='binary:logistic', random_state=0,
+                                              reg_alpha=reg_alpha, reg_lambda=reg_lambda, scale_pos_weight=1,
                                               silent=True, subsample=1)
 
-                xgb_model = xgb_model.fit(X=X_train, y=y_train, verbose=1)
+                tic = time()
+                xgb_model = xgb_model.fit(X=X_train, y=y_train, verbose=False)
+
+                tac = time()
+                training_time = tac - tic
+
                 train_accuracy = xgb_model.score(X=X_train, y=y_train)
                 test_accuracy = xgb_model.score(X=X_test, y=y_test)
 
@@ -82,7 +89,8 @@ for lr in lrs:
                     "lr": lr,
                     "reg_alpha": reg_alpha,
                     "reg_lambda": reg_lambda,
-                    "base_score": base_score
+                    "base_score": base_score,
+                    "training_time": training_time
                 }
 
 
@@ -117,18 +125,18 @@ xgb_models_df.head()
 
 from sqlalchemy import create_engine
 
-engine = create_engine("postgresql://bartek:Aga@192.168.0.201:5432/logs")
+engine = create_engine(db_engine_str)
 xgb_models_df.to_sql("xgb_models2", engine)
 
 # Best Model:
 xgb_model = xgb.XGBClassifier(base_score=0.6, booster='gbtree', colsample_bylevel=1,
        colsample_bytree=1, gamma=0, learning_rate=0.025, max_delta_step=0,
        max_depth=6, min_child_weight=1, missing=None, n_estimators=1000,
-       n_jobs=-1, nthread=None, objective='binary:logistic', random_state=0,
-       reg_alpha=1, reg_lambda=1, scale_pos_weight=1, seed=None,
+       n_jobs=-1, objective='binary:logistic', random_state=0,
+       reg_alpha=1, reg_lambda=1, scale_pos_weight=1,
        silent=True, subsample=1)
 
-xgb_model = xgb_model.fit(X=X_train, y=y_train, verbose=0)
+xgb_model = xgb_model.fit(X=X_train, y=y_train, verbose=False)
 xgb_model.score(X=X_test, y=y_test)
 
 xgb.plot_importance(xgb_model)
@@ -142,7 +150,7 @@ xgb.to_graphviz(xgb_model, num_trees=524)
 # Próby z transakcją / może się przydać
 # Transaction: begin transaction + try + commit/rollback
 
-conn = psycopg2.connect(host='192.168.0.201', user='bartek', password='Aga', database='logs', port=5432)
+conn = psycopg2.connect(**db_creds)
 conn.set_client_encoding('UTF8')
 cur = conn.cursor()
 
