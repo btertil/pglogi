@@ -111,40 +111,45 @@ model_rank bigint
 
 
 
-
 -- uwaga, potrzebuję mieć id jako serial a nie int (bo inserty z pytjona !!)
+
+
+
+-- naprawa dl_models
+-- lepsza metoda
+
 begin transaction;
 
-drop table if exists dl_models2;
-create table dl_models2 (
-            id serial not null primary key,
-            python_model_id integer,
-            lr double precision,
-            batch_size integer,
-            epochs integer,
-            test_loss double precision,
-            test_accuracy double precision,
-            patience integer,
-            entered timestamp without time zone
-        );
+create table dl_models_backup as select * from dl_models;
 
-insert into dl_models2 (id, python_model_id, lr, batch_size, epochs, test_loss, test_accuracy, patience, entered) select
-    id,
-    python_model_id,
-    lr,
-    batch_size,
-    epochs,
-    test_loss,
-    test_accuracy,
-    patience,
-    entered
-from dl_models
-order by id;
+drop table dl_models cascade;
 
-drop table if exists dl_models cascade;
+create table dl_models (
+    id SERIAL not null primary key,
+    python_model_id INT,
+    lr double precision,
+    batch_size INT,
+    epochs INT,
+    train_loss double precision,
+    train_accuracy double precision,
+    valid_loss double precision,
+    valid_accuracy double precision,
+    test_loss double precision,
+    test_accuracy double precision,
+    machine_id varchar(90),
+    architecture varchar(250),
+    optimizer varchar(90),
+    patience int,
+    entered timestamp not null default now()
+);
 
-alter table dl_models2 rename to dl_models;
+insert into dl_models (python_model_id, lr, batch_size, epochs, test_loss, test_accuracy, patience)
+    select python_model_id, lr, batch_size, epochs, test_loss, test_accuracy, patience from dl_models_backup;
 
 commit;
+
+select * from dl_models limit 10;
+
+rollback;
 
 */
