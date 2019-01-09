@@ -7,6 +7,8 @@ Created on Wed Jan  2 18:07:31 2019
 
 import sys
 from time import sleep, time
+from datetime import timedelta
+
 import numpy as np
 import pandas as pd
 
@@ -175,7 +177,7 @@ def fit_and_evaluate_model(models, model_id=0, lr=0.001, batch_size=1024, epochs
     print("model_id_{}: lr={}, batch_size={}, epochs={}".format(model_id, lr, batch_size, epochs))
     print('Test loss:', test_loss)
     print('Test accuracy:', test_accuracy)
-    print("Training time: {}".format(training_time))
+    print("Training time: {}".format(str(timedelta(seconds=training_time))))
 
     # Zapisanie do dictionary
     models["{}".format(model_id)] = {
