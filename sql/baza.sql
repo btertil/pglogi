@@ -9,6 +9,8 @@ create table dl_models_results (
     lr double precision,
     batch_size INT,
     epochs INT,
+    optimizer varchar(90),
+    training_time interval,
     train_loss double precision,
     train_accuracy double precision,
     valid_loss double precision,
@@ -17,7 +19,7 @@ create table dl_models_results (
     test_accuracy double precision,
     machine_id varchar(90),
     architecture varchar(250),
-    optimizer varchar(90),
+    patience int,
     entered timestamp not null default now()
 );
 
@@ -137,6 +139,8 @@ create table xgb_models_results (
     lr double precision,
     batch_size INT,
     epochs INT,
+    optimizer varchar(90),
+    training_time interval,
     train_loss double precision,
     train_accuracy double precision,
     valid_loss double precision,
@@ -145,6 +149,6 @@ create table xgb_models_results (
     test_accuracy double precision,
     machine_id varchar(90),
     architecture varchar(250),
-    optimizer varchar(90),
+    patience int,
     entered timestamp not null default now()
 );

@@ -111,6 +111,7 @@ model_rank bigint
 
 
 
+
 -- uwaga, potrzebuję mieć id jako serial a nie int (bo inserty z pytjona !!)
 
 
@@ -120,7 +121,8 @@ model_rank bigint
 
 begin transaction;
 
-create table dl_models_backup as select * from dl_models;
+-- to tylko raz bo ORYINALNE ENTERED !!!
+-- create table dl_models_backup as select * from dl_models;
 
 drop table dl_models cascade;
 
@@ -130,6 +132,8 @@ create table dl_models (
     lr double precision,
     batch_size INT,
     epochs INT,
+    optimizer varchar(90),
+    training_time interval,
     train_loss double precision,
     train_accuracy double precision,
     valid_loss double precision,
@@ -138,16 +142,16 @@ create table dl_models (
     test_accuracy double precision,
     machine_id varchar(90),
     architecture varchar(250),
-    optimizer varchar(90),
     patience int,
     entered timestamp not null default now()
 );
 
-insert into dl_models (python_model_id, lr, batch_size, epochs, test_loss, test_accuracy, patience)
-    select python_model_id, lr, batch_size, epochs, test_loss, test_accuracy, patience from dl_models_backup;
+insert into dl_models (python_model_id, lr, batch_size, epochs, test_loss, test_accuracy, patience, entered)
+    select python_model_id, lr, batch_size, epochs, test_loss, test_accuracy, patience, entered from dl_models_backup;
 
 commit;
 
+select * from dl_models_backup limit 10;
 select * from dl_models limit 10;
 
 rollback;
