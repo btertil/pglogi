@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from settings import db_creds
 
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeRegressor
@@ -25,21 +26,16 @@ sns.set_style("darkgrid")
 
 
 # Try to connect: remote database
-conn = psycopg2.connect(host='192.168.0.201', user='bartek', password='Aga', database='logs', port=5432)
+conn = psycopg2.connect(**db_creds)
 conn.set_client_encoding('UTF8')
 cur = conn.cursor()
-
-# If local on ubuntulaptop
-# conn2 = psycopg2.connect(host='localhost', user='bartek', password='Aga', database='bartek', port=5432)
-# conn2.set_client_encoding('UTF8')
-# cur2 = conn2.cursor()
 
 
 # Prace z wynikami modeli deep learning
 # ######################################
 
 
-### Uwaga! tylko modele BEZ early stopping!
+### Uwaga! tylko modele BEZ early stopping i bez super-długiego uczenia!
 dl_models_df = pd.read_sql_query('select * from v_dl_models_performance where run_id <> 8 and epochs < 32000', conn)
 dl_models_df.head()
 

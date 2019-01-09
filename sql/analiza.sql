@@ -129,15 +129,4 @@ where test_accuracy = max;
 select * from v_dl_models_runs where id >= 1524;
 
 -- benchmark GPU vs CPU
-select
-    case
-        when batch_size = 8192 then 'Linux CPU'
-        else 'Windows GPU'
-    end machine,
-    count(*) ile,
-    avg(training_time) avg_training_time
-from v_dl_models_runs where id >= 1520
-group by 1
-order by 3;
-
 select * from v_benchmark;
