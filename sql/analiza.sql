@@ -115,3 +115,11 @@ from
 where test_accuracy = max;
 
 -- delete from dl_models where id = 1518;
+
+
+
+-- benchmark Linux CPU i7 3rdGen vs Win GPU + i7 8thGen
+-- ----------------------------------------------------
+
+-- python_model_id: od 2237 (nieparzyste, batchsize 8162) <--- LINUX
+-- python_model_id: od 2237 (nieparzyste, batchsize 16384) <--- WINDOWS
