@@ -184,8 +184,8 @@ def fit_and_evaluate_model(models, model_id=0, lr=0.001, batch_size=1024, epochs
         "epochs": epochs,
         "train_loss": train_loss,
         "train_accuracy": train_accuracy,
-        "val_loss": valid_loss,
-        "val_accuracy": valid_accuracy,
+        "valid_loss": valid_loss,
+        "valid_accuracy": valid_accuracy,
         "test_loss": test_loss,
         "test_accuracy": test_accuracy,
         "training_time": training_time
