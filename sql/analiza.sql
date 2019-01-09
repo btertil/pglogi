@@ -79,6 +79,8 @@ select count(*) ile, max(id) max_id, max(test_accuracy) best from dl_models;
 
 -- basic selects
 select * from v_dl_models_runs;
+select * from v_dl_models_runs where id >= 1520;
+
 select * from v_dl_models_runs where run_id >= 7 and patience is null and id > 1016;
 select * from v_dl_models_performance limit 50;
 
@@ -123,3 +125,19 @@ where test_accuracy = max;
 
 -- python_model_id: od 2237 (nieparzyste, batchsize 8162) <--- LINUX
 -- python_model_id: od 2237 (nieparzyste, batchsize 16384) <--- WINDOWS
+
+select * from v_dl_models_runs where id >= 1524;
+
+-- benchmark GPU vs CPU
+select
+    case
+        when batch_size = 8192 then 'Linux CPU'
+        else 'Windows GPU'
+    end machine,
+    count(*) ile,
+    avg(training_time) avg_training_time
+from v_dl_models_runs where id >= 1520
+group by 1
+order by 3;
+
+select * from v_benchmark;

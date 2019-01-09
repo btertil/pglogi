@@ -167,3 +167,19 @@ create table xgb_models_results (
 
 -- python_model_id: od 2237 (nieparzyste, batchsize 8162) <--- LINUX
 -- python_model_id: od 2237 (nieparzyste, batchsize 16384) <--- WINDOWS
+
+-- benchmark GPU vs CPU
+drop view if exists v_benchmark;
+create view v_benchmark as
+    select
+        case
+            when batch_size = 8192 then 'Linux CPU'
+            else 'Windows GPU'
+        end machine,
+        count(*) ile,
+        avg(training_time) avg_training_time
+    from v_dl_models_runs where id >= 1520
+    group by 1
+    order by 3;
+
+select * from v_benchmark;
