@@ -39,6 +39,8 @@ create table dl_models as
             patience integer
         );
 
+alter table dl_models alter column id type SERIAL not null primary key;
+
 
 drop table if exists dl_models_performance;
 create table dl_models_performance as
@@ -107,5 +109,42 @@ run_id integer,
 time_diff interval,
 model_rank bigint
 
+
+
+
+-- uwaga, potrzebuję mieć id jako serial a nie int (bo inserty z pytjona !!)
+begin transaction;
+
+drop table if exists dl_models2;
+create table dl_models2 (
+            id serial not null primary key,
+            python_model_id integer,
+            lr double precision,
+            batch_size integer,
+            epochs integer,
+            test_loss double precision,
+            test_accuracy double precision,
+            patience integer,
+            entered timestamp without time zone
+        );
+
+insert into dl_models2 (id, python_model_id, lr, batch_size, epochs, test_loss, test_accuracy, patience, entered) select
+    id,
+    python_model_id,
+    lr,
+    batch_size,
+    epochs,
+    test_loss,
+    test_accuracy,
+    patience,
+    entered
+from dl_models
+order by id;
+
+drop table if exists dl_models cascade;
+
+alter table dl_models2 rename to dl_models;
+
+commit;
 
 */
