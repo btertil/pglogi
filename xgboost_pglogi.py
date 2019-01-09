@@ -73,7 +73,7 @@ for lr in lrs:
                 train_accuracy = xgb_model.score(X=X_train, y=y_train)
                 test_accuracy = xgb_model.score(X=X_test, y=y_test)
 
-                print("model_id_{}: test_accuracy={} (lr={}, reg_alpha={}, reg_lambda={}, base_score={})" \
+                print("\n\nmodel_id_{}: test_accuracy={} (lr={}, reg_alpha={}, reg_lambda={}, base_score={})" \
                       .format(model_id, test_accuracy, lr, reg_alpha, reg_lambda, base_score))
 
                 models[model_id] = {
@@ -118,7 +118,7 @@ xgb_models_df.head()
 from sqlalchemy import create_engine
 
 engine = create_engine("postgresql://bartek:Aga@192.168.0.201:5432/logs")
-xgb_models_df.to_sql("xgb_models", engine)
+xgb_models_df.to_sql("xgb_models2", engine)
 
 # Best Model:
 xgb_model = xgb.XGBClassifier(base_score=0.6, booster='gbtree', colsample_bylevel=1,
@@ -128,7 +128,7 @@ xgb_model = xgb.XGBClassifier(base_score=0.6, booster='gbtree', colsample_byleve
        reg_alpha=1, reg_lambda=1, scale_pos_weight=1, seed=None,
        silent=True, subsample=1)
 
-xgb_model = xgb_model.fit(X=X_train, y=y_train, verbose=2)
+xgb_model = xgb_model.fit(X=X_train, y=y_train, verbose=0)
 xgb_model.score(X=X_test, y=y_test)
 
 xgb.plot_importance(xgb_model)
