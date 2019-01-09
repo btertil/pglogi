@@ -116,6 +116,12 @@ def fit_and_evaluate_model(models, model_id=0, lr=0.001, batch_size=1024, epochs
     tac = time()
     training_time = tac - tic
 
+    # statystyki train i validation z historii (ostatni element arraya/listy)
+    training_loss = history.history['loss'][-1]
+    training_accuracy = history.history['acc'][-1]
+    validation_loss = history.history['val_loss'][-1]
+    validation_accuracy = history.history['val_acc'][-1]
+
     # Plot training history
     def plot_accuracy_and_loss(trained_model, test_accuracy):
 
@@ -129,7 +135,7 @@ def fit_and_evaluate_model(models, model_id=0, lr=0.001, batch_size=1024, epochs
             val_loss = hist['val_loss']
             validation = True
         except KeyError:
-            print("No validation data defined, showing only training set hostory")
+            print("No validation data defined, showing only training set history")
         epochsw = range(1, len(acc) + 1)
 
         fig, ax = plt.subplots(1, 2, figsize=(14, 6))
@@ -176,6 +182,10 @@ def fit_and_evaluate_model(models, model_id=0, lr=0.001, batch_size=1024, epochs
         "lr": lr,
         "batch_size": batch_size,
         "epochs": epochs,
+        "training_loss": training_loss,
+        "training_accuracy": training_accuracy,
+        "validation_loss": validation_loss,
+        "validation_accuracy": validation_accuracy,
         "test_loss": test_loss,
         "test_accuracy": test_accuracy,
         "training_time": training_time
@@ -183,9 +193,21 @@ def fit_and_evaluate_model(models, model_id=0, lr=0.001, batch_size=1024, epochs
 
     # insert statement
     sql_statement = """
-                insert into dl_models (python_model_id, lr, batch_size, epochs, test_loss, test_accuracy, training_time)
-                 values ({}, {}, {}, {}, {}, {}, '{}' :: interval)
-            """.format(model_id, lr, batch_size, epochs, test_loss, test_accuracy, training_time)
+                insert into dl_models (
+                    python_model_id,
+                    lr,
+                    batch_size,
+                    epochs,                   
+                    training_loss,
+                    training_accuracy,
+                    validation_loss,
+                    validation_accuracy,                    
+                    test_loss,
+                    test_accuracy,
+                    training_time)
+                 values ({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, '{}' :: interval)
+            """.format(model_id, lr, batch_size, epochs, training_loss, training_accuracy,
+                       validation_loss, validation_accuracy, test_loss, test_accuracy, training_time)
 
     global conn
     global cur
@@ -236,9 +258,13 @@ def fit_and_evaluate_model(models, model_id=0, lr=0.001, batch_size=1024, epochs
             "model_id": model_id,
             "lr": lr,
             "batch_size": batch_size,
-            "epochs": epochs,
+            "training_loss": training_loss,
+            "training_accuracy": training_accuracy,
+            "validation_loss": validation_loss,
+            "validation_accuracy": validation_accuracy,
             "test_loss": test_loss,
-            "test_accuracy": test_accuracy
+            "test_accuracy": test_accuracy,
+            "training_time": training_time
         }
         # nowy wykres z historią uczenia
         plot_accuracy_and_loss(history, test_accuracy)
@@ -269,5 +295,3 @@ for lr in lrs:
 print("\n\nBest model:")
 print(models["best"])
 
-
-# TODO: dodać pozostałe hyperparameters modeli, szczególnie: architektura i regularyzacja)
