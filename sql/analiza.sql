@@ -89,6 +89,7 @@ select * from v_dl_models_best_per_run;
 -- current progress
 select count(*) ile, max(id) max_id, max(test_accuracy) best from dl_models;
 
+-- last models
 select * from dl_models order by id desc;
 
 commit;
