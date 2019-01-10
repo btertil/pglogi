@@ -126,10 +126,38 @@ create or replace view v_dl_models_best_per_run as
 
 select * from v_dl_models_best_per_run;
 
+
+-- benchmark Linux CPU i7 3rdGen vs Win GPU + i7 8thGen
+-- ----------------------------------------------------
+
+-- python_model_id: od 2237 (nieparzyste, batchsize 8162) <--- LINUX
+-- python_model_id: od 2237 (nieparzyste, batchsize 16384) <--- WINDOWS
+
+-- benchmark GPU vs CPU
+drop view if exists v_benchmark;
+create view v_benchmark as
+    select
+        case
+            when batch_size = 8192 then 'Linux CPU'
+            else 'Windows GPU'
+        end machine,
+        count(*) ile,
+        avg(training_time) avg_training_time
+    from v_dl_models_runs where id >= 1520
+    group by 1
+    order by 3;
+
+select * from v_benchmark;
+
 commit;
 
 
--- xgb models
+
+
+-- XGBOOST Models
+-- ---------------
+
+-- best xgboost model
 
 -- tabela z danymi modeli
 -- drop table if exists xgb_models_results;
@@ -162,24 +190,3 @@ create table xgb_models_results (
 );
 
 
--- benchmark Linux CPU i7 3rdGen vs Win GPU + i7 8thGen
--- ----------------------------------------------------
-
--- python_model_id: od 2237 (nieparzyste, batchsize 8162) <--- LINUX
--- python_model_id: od 2237 (nieparzyste, batchsize 16384) <--- WINDOWS
-
--- benchmark GPU vs CPU
-drop view if exists v_benchmark;
-create view v_benchmark as
-    select
-        case
-            when batch_size = 8192 then 'Linux CPU'
-            else 'Windows GPU'
-        end machine,
-        count(*) ile,
-        avg(training_time) avg_training_time
-    from v_dl_models_runs where id >= 1520
-    group by 1
-    order by 3;
-
-select * from v_benchmark;

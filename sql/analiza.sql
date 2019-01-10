@@ -99,7 +99,23 @@ commit;
 select * from v_dl_models_performance where id=1;
 
 
+
+-- benchmark Linux CPU i7 3rdGen vs Win GPU + i7 8thGen
+-- ----------------------------------------------------
+
+-- python_model_id: od 2237 (nieparzyste, batchsize 8162) <--- LINUX
+-- python_model_id: od 2237 (nieparzyste, batchsize 16384) <--- WINDOWS
+
+select * from v_dl_models_runs where id >= 1524;
+
+-- benchmark GPU vs CPU
+select * from v_benchmark;
 -- xgboost models from ubuntulaptop (sql_alchemy via pandas):
+
+
+
+-- XGBOOST Models
+-- ---------------
 
 -- best xgboost model
 select
@@ -119,14 +135,3 @@ where test_accuracy = max;
 -- delete from dl_models where id = 1518;
 
 
-
--- benchmark Linux CPU i7 3rdGen vs Win GPU + i7 8thGen
--- ----------------------------------------------------
-
--- python_model_id: od 2237 (nieparzyste, batchsize 8162) <--- LINUX
--- python_model_id: od 2237 (nieparzyste, batchsize 16384) <--- WINDOWS
-
-select * from v_dl_models_runs where id >= 1524;
-
--- benchmark GPU vs CPU
-select * from v_benchmark;
