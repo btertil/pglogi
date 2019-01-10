@@ -82,7 +82,9 @@ create or replace view v_dl_models_runs as
         end,
         entered;
 
-select * from v_dl_models_runs;
+
+-- ostatnie model id zapisane do bazy
+select * from v_dl_models_runs order by python_model_id desc;
 
 -- view v_dl_models_performance
 create or replace view v_dl_models_performance as
@@ -133,21 +135,32 @@ select * from v_dl_models_best_per_run;
 -- python_model_id: od 2237 (nieparzyste, batchsize 8162) <--- LINUX
 -- python_model_id: od 2237 (nieparzyste, batchsize 16384) <--- WINDOWS
 
--- benchmark GPU vs CPU
+
+-- benchmark GPU vs CPU + time drift per 50 epochs
 drop view if exists v_benchmark;
 create view v_benchmark as
     select
-        case
-            when batch_size = 8192 then 'Linux CPU'
-            else 'Windows GPU'
-        end machine,
+        machine,
         count(*) ile,
-        avg(training_time) avg_training_time
-    from v_dl_models_runs where id >= 1520
+        avg(training_time),
+        avg(time_drift) avg_time_drift_epochs
+    from
+        (select
+            case
+                when batch_size = 8192 then 'Linux CPU'
+                else 'Windows GPU'
+            end machine,
+            training_time,
+            training_time - lag(training_time, 1) over (partition by batch_size order by python_model_id) time_drift
+        from v_dl_models_runs where id >= 1520) s
     group by 1
-    order by 3;
+    order by 3 desc;
 
 select * from v_benchmark;
+
+
+-- time drift
+
 
 commit;
 
