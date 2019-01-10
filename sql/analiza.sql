@@ -132,6 +132,6 @@ from
     ) s
 where test_accuracy = max;
 
--- delete from dl_models where id = 1518;
+-- delete from dl_models where id = 1664;
 
 

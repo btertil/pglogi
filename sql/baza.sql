@@ -42,7 +42,8 @@ create or replace view v_dl_models_runs as
             when python_model_id >= 1731 and python_model_id < 1886 then 9
             when python_model_id >= 1886 and python_model_id < 1948 then 10
             when python_model_id >= 1948 and python_model_id < 2430 then 11
-            else 12
+            when python_model_id >= 2430 and python_model_id < 2434 then 12
+            else 13
         end run_id,
         entered -  lag(entered, 1) over (partition by
             case
@@ -58,7 +59,8 @@ create or replace view v_dl_models_runs as
                 when python_model_id >= 1731 and python_model_id < 1886 then 9
                 when python_model_id >= 1886 and python_model_id < 1948 then 10
                 when python_model_id >= 1948 and python_model_id < 2430 then 11
-                else 12
+                when python_model_id >= 2430 and python_model_id < 2434 then 12
+                else 13
             end order by id
         ) time_diff
     from
@@ -78,7 +80,8 @@ create or replace view v_dl_models_runs as
             when python_model_id >= 1731 and python_model_id < 1886 then 9
             when python_model_id >= 1886 and python_model_id < 1948 then 10
             when python_model_id >= 1948 and python_model_id < 2430 then 11
-            else 12
+            when python_model_id >= 2430 and python_model_id < 2434 then 12
+            else 13
         end,
         entered;
 
@@ -154,7 +157,7 @@ create view v_benchmark as
             training_time - lag(training_time, 1) over (partition by batch_size order by python_model_id) time_drift
         from v_dl_models_runs where id >= 1520) s
     group by 1
-    order by 3 desc;
+    order by 3;
 
 select * from v_benchmark;
 
