@@ -111,7 +111,11 @@ create or replace view v_dl_models_best_per_run as
        lr,
        batch_size,
        epochs,
+       train_loss,
+       valid_loss,
        test_loss,
+       train_accuracy,
+       valid_accuracy,
        test_accuracy,
        entered,
        run_id,
@@ -155,7 +159,7 @@ create view v_benchmark as
             end machine,
             training_time,
             training_time - lag(training_time, 1) over (partition by batch_size order by python_model_id) time_drift
-        from v_dl_models_runs where id >= 1520) s
+        from v_dl_models_runs where python_model_id >= 2238 and python_model_id < 2430 ) s
     group by 1
     order by 3;
 
